@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Мой аккаунт</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+    <div class="logo-home">
+        <div class="logo">
+            <!-- Подключение логотипа через Thymeleaf -->
+            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+        </div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+    </div>
+
+    <div class="nav">
+        <div class="BASKET">
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+        </div>
+        <div class="MY ACCOUNT">
+            <a th:href="@{/login}">MY ACCOUNT</a>
+            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/logout}">EXIT</a>
+            <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <h1>Мой аккаунт</h1>
+
+    <!-- Личная информация -->
+    <h2>Личная информация</h2>
+    <p><strong>Имя:</strong> <span th:text="${user.firstName}"></span></p>
+    <p><strong>Фамилия:</strong> <span th:text="${user.lastName}"></span></p>
+    <p><strong>Телефон:</strong> <span th:text="${user.phoneNumber}"></span></p>
+    <p><strong>Город:</strong> <span th:text="${user.city}"></span></p>
+    <p><strong>Адрес:</strong> <span th:text="${user.address}"></span></p>
+    <p><strong>Почтовый индекс:</strong> <span th:text="${user.postIndex}"></span></p>
+
+    <hr>
+
+    <!-- Актуальные заказы -->
+    <h2>Актуальные заказы</h2>
+    <table th:if="${not #lists.isEmpty(activeOrders)}">
+        <tr>
+            <th>Номер заказа</th>
+            <th>Статус</th>
+            <th>Сумма</th>
+            <th>Товары</th>
+        </tr>
+        <tr th:each="order : ${activeOrders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.orderPrice} + ' ₽'"></td>
+            <td>
+                <ul>
+                    <li th:each="orderItem : ${order.orderItems}">
+                        <span th:text="${orderItem.product.name}"></span>
+                        (x<span th:text="${orderItem.quantity}"></span>) -
+                        <span th:text="${orderItem.price} + ' ₽'"></span>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    <p th:if="${#lists.isEmpty(activeOrders)}">Нет активных заказов</p>
+
+    <hr>
+
+    <!-- История заказов -->
+    <h2>История заказов</h2>
+    <table th:if="${not #lists.isEmpty(orderHistory)}">
+        <tr>
+            <th>Номер заказа</th>
+            <th>Статус</th>
+            <th>Сумма</th>
+            <th>Товары</th>
+        </tr>
+        <tr th:each="order : ${orderHistory}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.status}"></td>
+            <td th:text="${order.orderPrice} + ' ₽'"></td>
+            <td>
+                <ul>
+                    <li th:each="orderItem : ${order.orderItems}">
+                        <span th:text="${orderItem.product.name}"></span>
+                        (x<span th:text="${orderItem.quantity}"></span>) -
+                        <span th:text="${orderItem.price} + ' ₽'"></span>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    <p th:if="${#lists.isEmpty(orderHistory)}">История заказов отсутствует</p>
+    <br>
+</div>
+<footer>
+    <nav class="nav_footer">
+        <ul>
+            <li><a th:href="@{/delivery}">Доставка</a></li>
+            <li><a th:href="@{/returns}">Возврат</a></li>
+            <li><a th:href="@{/exchange}">Обмен</a></li>
+            <li><a th:href="@{/contacts}">Контакты</a></li>
+            <li><a th:href="@{/offer}">Оферта</a></li>
+        </ul>
+    </nav>
+    <div class="footer-content">
+        <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+    </div>
+</footer>
+</body>
+</html>

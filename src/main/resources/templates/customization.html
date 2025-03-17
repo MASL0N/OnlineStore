@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name}">Детали продукта</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+    <div class="logo-home">
+        <div class="logo">
+            <!-- Подключение логотипа через Thymeleaf -->
+            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+        </div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+    </div>
+
+    <div class="nav">
+        <div class="BASKET">
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+        </div>
+        <div class="MY ACCOUNT">
+            <a th:href="@{/login}">MY ACCOUNT</a>
+            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/logout}">EXIT</a>
+            <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+        </div>
+    </div>
+</header>
+
+
+<main class="product-details">
+    <div class="product-container">
+        <!-- Левая часть с фото товара -->
+        <img th:src="@{${primaryImage != null ? primaryImage.imageUrl : '/img/O4.png'}}"
+             th:alt="${product.name}">
+
+        <!-- Правая часть с характеристиками товара и кнопками -->
+        <form action="/api/v1/customization/customize" method="post">
+            <input type="hidden" th:value="${product.primaryImage.imageUrl}" name="primaryImage" />
+            <input type="hidden" name="productId" th:value="${productId}">
+
+            <h1>Кастомизация товара</h1>
+
+            <!-- Материал -->
+            <label for="material">Материал:</label>
+            <select name="materialId" id="material">
+                <option th:each="material : ${materials}"
+                        th:value="${material.materialId}"
+                        th:text="${material.name}"
+                        th:attr="data-description=${material.description}">
+                </option>
+            </select><br>
+            <p id="materialDescription"></p> <!-- Описание материала -->
+
+            <!-- Цвет -->
+            <label for="color">Цвет:</label>
+            <select name="colorId" id="color">
+                <option th:each="color : ${colors}" th:value="${color.colorId}" th:text="${color.name}"></option>
+            </select><br>
+
+            <!-- Принт -->
+            <label for="printType">Принт:</label>
+            <select name="printTypeId" id="printType">
+                <option th:each="printType : ${printTypes}"
+                        th:value="${printType.printTypeId}"
+                        th:text="${printType.name}"
+                        th:data-image-url="${printType.imageUrl}"
+                        th:data-description="${printType.description}">
+                </option>
+            </select><br>
+            <p id="printDescription"></p> <!-- Описание принта -->
+
+            <div class="print-preview">
+                <img id="printPreview" src="" alt="Выберите принт" width="200">
+            </div>
+
+            <label for="size">Размер:</label>
+            <select name="sizeId" id="size">
+                <option th:each="size : ${sizes}" th:value="${size.id}" th:text="${size.size}"></option>
+            </select><br>
+
+            <button type="submit">Добавить кастомизированный продукт в корзину</button>
+        </form>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let materialSelect = document.getElementById("material");
+                let materialDescription = document.getElementById("materialDescription");
+
+                let printSelect = document.getElementById("printType");
+                let printDescription = document.getElementById("printDescription");
+
+                let printPreview = document.getElementById("printPreview");
+
+                // Функция для обновления описания
+                function updateDescription(selectElement, descriptionElement, dataAttribute) {
+                    let selectedOption = selectElement.options[selectElement.selectedIndex];
+                    let description = selectedOption.getAttribute(dataAttribute);
+                    descriptionElement.textContent = description || ''; // Показываем описание или пустое
+                }
+
+                // Обработчик изменения материала
+                materialSelect.addEventListener("change", function() {
+                    updateDescription(materialSelect, materialDescription, "data-description");
+                });
+
+                // Обработчик изменения принта
+                printSelect.addEventListener("change", function() {
+                    // Обновляем описание принта
+                    updateDescription(printSelect, printDescription, "data-description");
+
+                    // Обновляем изображение принта
+                    let selectedOption = printSelect.options[printSelect.selectedIndex];
+                    let imageUrl = selectedOption.getAttribute("data-image-url");
+                    printPreview.src = imageUrl || '';
+                });
+
+                // Устанавливаем описания и изображение по умолчанию
+                updateDescription(materialSelect, materialDescription, "data-description");
+                updateDescription(printSelect, printDescription, "data-description");
+
+                let firstPrintOption = printSelect.options[printSelect.selectedIndex];
+                if (firstPrintOption) {
+                    printPreview.src = firstPrintOption.getAttribute("data-image-url");
+                }
+            });
+        </script>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+</footer>
+
+</body>
+</html>

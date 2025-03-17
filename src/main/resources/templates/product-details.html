@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name}">Детали продукта</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+    <div class="logo-home">
+        <div class="logo">
+            <!-- Подключение логотипа через Thymeleaf -->
+            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+        </div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+    </div>
+
+    <div class="nav">
+        <div class="BASKET">
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+        </div>
+        <div class="MY ACCOUNT">
+            <a th:href="@{/login}">MY ACCOUNT</a>
+            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/EXIT}">EXIT</a>
+            <a th:href="@{/EXIT}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+        </div>
+    </div>
+</header>
+
+
+<main class="product-details">
+    <div class="product-container">
+        <!-- Блок изображений -->
+        <div class="image-gallery">
+            <!-- Главное изображение -->
+            <img id="mainImage"
+                 th:src="@{${product.primaryImage != null ? product.primaryImage.imageUrl : '/img/O4.png'}}"
+                 th:alt="${product.name}">
+
+            <!-- Миниатюры всех изображений -->
+            <div class="product-images">
+                <img th:each="image : ${product.images}"
+                     th:src="@{${image.imageUrl}}"
+                     th:alt="${product.name}"
+                     class="thumbnail"
+                     onclick="changeMainImage(this)">
+            </div>
+        </div>
+
+        <!-- Правая часть с характеристиками товара и кнопками -->
+        <div class="product-info">
+            <h1 th:text="${product.name}">Название товара</h1>
+            <p th:text="${product.decsription}">Описание товара</p>
+            <span class="price" th:text="${product.price} + ' ₽'">Цена</span>
+
+            <h2>Характеристики</h2>
+            <ul class="product-specs">
+                <li><strong>Размер:</strong>
+                    <select name="sizeId" id="size" required>
+                        <option value="" disabled selected>Выберите размер</option>
+                        <option th:each="sizeItem : ${product.sizes}"
+                                th:value="${sizeItem.id}"
+                                th:text="${sizeItem.size}">
+                        </option>
+                    </select>
+                </li>
+                <li><strong>Цвет:</strong> <span th:text="${product.color.name}">Цвет</span></li>
+                <li><strong>Материал:</strong>
+                    <span th:text="${product.material.name}">Материал</span>
+                    <span th:if="${product.material.description}"> - </span>
+                    <span th:text="${product.material.description}" th:if="${product.material.description}"></span>
+                </li>
+            </ul>
+
+            <!-- Кнопки действия -->
+            <div class="product-actions">
+                <form th:action="@{/api/v1/basket/add}" method="post" class="add-to-cart" onsubmit="return validateForm()">
+                    <input type="hidden" th:value="${product.id}" name="productId" />
+                    <!-- Скрытое поле для передачи выбранного размера -->
+                    <input type="hidden" name="sizeId" id="selectedSizeId" />
+                    <button type="submit">Добавить в корзину</button>
+                </form>
+            </div>
+            <div class="product-actions">
+                <a th:href="@{'/api/v1/customization/' + ${product.id}}" class="customize-product">Кастомизировать товар</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+</footer>
+
+<script>
+    function changeMainImage(thumbnail) {
+        document.getElementById("mainImage").src = thumbnail.src;
+    }
+    document.getElementById('size').addEventListener('change', function () {
+        document.getElementById('selectedSizeId').value = this.value;
+    });
+
+    function validateForm() {
+        let selectedSize = document.getElementById('selectedSizeId').value;
+        if (!selectedSize) {
+            alert("Выберите размер перед добавлением в корзину!");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wemalpa</title>
+    <!-- Подключение CSS через Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+    <div class="logo-home">
+        <div class="logo">
+            <!-- Подключение логотипа через Thymeleaf -->
+            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+        </div>
+    </div>
+
+    <div class="nav">
+        <div class="PRODUCT">
+            <a th:href="@{/api/v1/admin/product-admin}">PRODUCT</a>
+        </div>
+        <div class="USERS">
+            <a th:href="@{/api/v1/admin/user-admin}">USERS</a>
+        </div>
+        <div class="ORDERS">
+            <a th:href="@{/api/v1/admin/order-admin}">ORDERS</a>
+        </div>
+        <div class="CUSTOMS">
+            <a th:href="@{/api/v1/admin/custom-admin}">CUSTOMS</a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/logout}">EXIT</a>
+        </div>
+    </div>
+</header>
+<hr class="divider">
+<h2 class="title">welcome to the wemalpa collection</h2>
+
+<main>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>UserID</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Order items</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="order : ${orders}">
+            <tr>
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.user.userId}"></td>
+                <td th:text="${order.status}"></td>
+                <td th:text="${order.orderPrice}"></td>
+                <td>
+                    <ul>
+                        <li th:each="item : ${order.orderItems}">
+                            <span th:text="${item.product.name}"></span> <!-- 🔥 Показываем название товара -->
+                            (x<span th:text="${item.quantity}"></span>) <!-- Количество -->
+                        </li>
+                    </ul>
+                </td>
+                <td><a th:href="@{/api/v1/admin/order-edit/{id}(id=${order.orderId})}" class="button-link edit">Edit</a></td>
+                <td><a th:href="@{/api/v1/admin/order-delete/{id}(id=${order.orderId})}" class="button-link delete" onclick="return confirm('Вы точно хотите удалить заказ?')">Delete</a></td>
+
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</main>
+
+<footer>
+    <nav class="nav_footer">
+        <ul>
+            <li><a th:href="@{/delivery}">Доставка</a></li>
+            <li><a th:href="@{/returns}">Возврат</a></li>
+            <li><a th:href="@{/exchange}">Обмен</a></li>
+            <li><a th:href="@{/contacts}">Контакты</a></li>
+            <li><a th:href="@{/offer}">Оферта</a></li>
+        </ul>
+    </nav>
+    <div class="footer-content">
+        <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+    </div>
+</footer>
+</body>
+</html>

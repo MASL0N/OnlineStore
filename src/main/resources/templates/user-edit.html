@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование пользователя</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Редактирование продукта</h2>
+    <form th:action="@{/api/v1/admin/user-edit/{id}(id=${user.userId})}" th:object="${user}" method="post">
+
+        <label for="userId">Id</label>
+        <input type="text" id="userId" th:field="*{userId}" required>
+
+        <label for="email">Email</label>
+        <input type="text" id="email" th:field="*{email}" required>
+
+        <label for="firstName">Имя:</label>
+        <input type="text" id="firstName" th:field="*{firstName}" required>
+
+        <label for="lastName">Отчество:</label>
+        <input type="text" id="lastName" th:field="*{lastName}" required>
+
+        <label for="city">Город:</label>
+        <input type="text" id="city" th:field="*{city}" required>
+
+        <label for="address">Адрес:</label>
+        <input type="text" id="address" th:field="*{address}" required>
+
+        <label for="phone">Номер телефона</label>
+        <input type="text" id="phone" th:field="*{phoneNumber}" required>
+
+        <label for="index">Индекс:</label>
+        <input type="text" id="index" th:field="*{postIndex}" required>
+
+        <label for="role">Права доступа:</label>
+        <select id="role" th:field="*{role}">
+            <option value="ADMIN">ADMIN</option>
+            <option value="USER">USER</option>
+        </select>
+
+        <div class="button-container">
+            <button type="submit" class="btn btn-save">Сохранить изменения</button>
+            <a th:href="@{/api/v1/admin/user-admin}" class="btn btn-cancel">Отмена</a>
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

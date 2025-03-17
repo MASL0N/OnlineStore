@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание нового товара</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Создание нового товара</h2>
+    <form th:action="@{/api/v1/admin/product-create}" th:object="${product}" method="post" enctype="multipart/form-data">
+
+        <label for="name">Название:</label>
+        <input type="text" id="name" th:field="*{name}" required>
+
+        <label for="description">Описание:</label>
+        <input type="text" id="description" th:field="*{decsription}" required>
+
+        <label for="price">Цена:</label>
+        <input type="number" id="price" th:field="*{price}" step="0.01" required>
+
+        <label for="gender">Пол:</label>
+        <select id="gender" th:field="*{gender}">
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+            <option value="Унисекс">Унисекс</option>
+        </select>
+
+        <label for="clothingType">Тип одежды:</label>
+        <input type="text" id="clothingType" th:field="*{clothingType}" required>
+
+        <label>Размеры в наличии:</label>
+        <div>
+            <input type="checkbox" id="sizeXS" name="sizes" value="XS">
+            <label for="sizeXS">XS</label>
+
+            <input type="checkbox" id="sizeS" name="sizes" value="S">
+            <label for="sizeS">S</label>
+
+            <input type="checkbox" id="sizeM" name="sizes" value="M">
+            <label for="sizeM">M</label>
+
+            <input type="checkbox" id="sizeL" name="sizes" value="L">
+            <label for="sizeL">L</label>
+
+            <input type="checkbox" id="sizeXL" name="sizes" value="XL">
+            <label for="sizeXL">XL</label>
+
+            <input type="checkbox" id="sizeXXL" name="sizes" value="XXL">
+            <label for="sizeXXL">XXL</label>
+        </div>
+
+        <label for="images">Фото товара (первое изображение будет приоритетным):</label>
+        <input type="file" id="images" name="images" accept="image/*" multiple required>
+
+        <div class="button-container">
+            <button type="submit" class="btn btn-save">Сохранить изменения</button>
+            <a th:href="@{/api/v1/admin/product-admin}" class="btn btn-cancel">Отмена</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wemalpa</title>
+  <!-- Подключение CSS через Thymeleaf -->
+  <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<header>
+  <div class="logo-home">
+    <div class="logo">
+      <!-- Подключение логотипа через Thymeleaf -->
+      <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+    </div>
+    <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+  </div>
+
+  <div class="nav">
+    <div class="BASKET">
+      <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+    </div>
+    <div class="MY ACCOUNT">
+      <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+      <a th:href="@{/api/v1/account}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+    </div>
+    <div class="EXIT">
+      <a th:href="@{/logout}">EXIT</a>
+      <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+    </div>
+  </div>
+</header>
+<hr class="divider">
+<h2 class="title">welcome to the wemalpa collection</h2>
+
+<main>
+  <section class="product-grid">
+    <!-- Пример динамического вывода товаров через Thymeleaf -->
+    <div class="product-card" th:each="product : ${products}">
+      <a th:href="@{/api/v1/product/{id}(id=${product.id})}">
+        <img th:src="@{${product.primaryImage.imageUrl}}"
+             th:alt="${product.name}">
+      </a>
+      <div class="product-info">
+        <h3>
+          <a th:href="@{/api/v1/product/{id}(id=${product.id})}" th:text="${product.name}">Товар</a>
+        </h3>
+        <p th:text="${product.decsription}">Описание товара</p>
+        <span class="price" th:text="${product.price} + ' ₽'">Цена</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <nav class="nav_footer">
+    <ul>
+      <li><a th:href="@{/delivery}">Доставка</a></li>
+      <li><a th:href="@{/returns}">Возврат</a></li>
+      <li><a th:href="@{/exchange}">Обмен</a></li>
+      <li><a th:href="@{/contacts}">Контакты</a></li>
+      <li><a th:href="@{/offer}">Оферта</a></li>
+    </ul>
+  </nav>
+  <div class="footer-content">
+    <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+  </div>
+</footer>
+</body>
+</html>
