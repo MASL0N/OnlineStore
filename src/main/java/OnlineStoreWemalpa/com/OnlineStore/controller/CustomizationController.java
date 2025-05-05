@@ -1,6 +1,7 @@
 package OnlineStoreWemalpa.com.OnlineStore.controller;
 
 import OnlineStoreWemalpa.com.OnlineStore.Configuration.MyUserDetails;
+import OnlineStoreWemalpa.com.OnlineStore.model.PrintType;
 import OnlineStoreWemalpa.com.OnlineStore.model.Product;
 import OnlineStoreWemalpa.com.OnlineStore.model.ProductImage;
 import OnlineStoreWemalpa.com.OnlineStore.model.User;
@@ -9,38 +10,42 @@ import OnlineStoreWemalpa.com.OnlineStore.repository.MaterialRepository;
 import OnlineStoreWemalpa.com.OnlineStore.repository.PrintTypeRepository;
 import OnlineStoreWemalpa.com.OnlineStore.repository.ProductRepository;
 import OnlineStoreWemalpa.com.OnlineStore.service.BasketService;
+import OnlineStoreWemalpa.com.OnlineStore.service.FileUploadService;
+import OnlineStoreWemalpa.com.OnlineStore.service.PrintTypeService;
 import OnlineStoreWemalpa.com.OnlineStore.service.impl.CustomizationServiceImpl;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("api/v1/customization")
+@AllArgsConstructor
 public class CustomizationController {
 
-    @Autowired
-    private CustomizationServiceImpl customizationService;
 
-    @Autowired
-    private MaterialRepository materialRepository;
+    private final CustomizationServiceImpl customizationService;
 
-    @Autowired
-    private ColorRepository colorRepository;
+    private final MaterialRepository materialRepository;
 
-    @Autowired
-    private PrintTypeRepository printTypeRepository;
+    private final ColorRepository colorRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final PrintTypeRepository printTypeRepository;
 
-    @Autowired
-    private BasketService basketService;
+    private final ProductRepository productRepository;
+
+    private final BasketService basketService;
+
+    private final FileUploadService fileUploadService;
+
+    private final PrintTypeService printTypeService;
 
     @GetMapping("/{productId}")
     public String showCustomizationPage(@PathVariable Long productId, Model model) {
@@ -65,7 +70,8 @@ public class CustomizationController {
                                    @RequestParam Long sizeId,
                                    @RequestParam String primaryImage,
                                    @RequestParam(value = "redirect", required = false) String redirectUrl,
-                                   RedirectAttributes redirectAttributes) {
+                                   RedirectAttributes redirectAttributes,
+                                   @RequestParam("image") MultipartFile file) {
         // Проверяем, авторизован ли пользователь
         if (userDetails == null) {
             redirectAttributes.addFlashAttribute("error", "Вы не авторизованы!");
@@ -75,18 +81,36 @@ public class CustomizationController {
         // Получаем объект пользователя
         User user = ((MyUserDetails) userDetails).getUser();
 
-        // Создаём кастомизированный товар
-        Product customizedProduct = customizationService.customizeProduct(productId, materialId, colorId, printTypeId);
+        if (!file.isEmpty()) {
+            PrintType printType = new PrintType();
+            String fileUrl = fileUploadService.uploadFile(file);
+            printType.setName("Принт, добавленный пользователем");
+            printType.setImageUrl(fileUrl);
+            printTypeService.savePrintType(printType);
+            Product customizedProduct = customizationService.customizeProduct(productId, materialId, colorId, printType.getPrintTypeId());
+            // Добавляем кастомизированный товар в корзину с выбранным размером
+            boolean added = basketService.addToBasket(user, customizedProduct.getId(), sizeId, primaryImage);
 
-        // Добавляем кастомизированный товар в корзину с выбранным размером
-        boolean added = basketService.addToBasket(user, customizedProduct.getId(), sizeId, primaryImage);
-
-        // Проверяем успешность добавления
-        if (!added) {
-            redirectAttributes.addFlashAttribute("error", "Не удалось добавить товар в корзину!");
-        } else {
-            redirectAttributes.addFlashAttribute("success", "Кастомизированный товар добавлен в корзину!");
+            // Проверяем успешность добавления
+            if (!added) {
+                redirectAttributes.addFlashAttribute("error", "Не удалось добавить товар в корзину!");
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Кастомизированный товар добавлен в корзину!");
+            }
+            return "redirect:/api/v1/basket";
         }
-        return "redirect:/api/v1/basket";
+        else{
+            Product customizedProduct = customizationService.customizeProduct(productId, materialId, colorId, printTypeId);
+            // Добавляем кастомизированный товар в корзину с выбранным размером
+            boolean added = basketService.addToBasket(user, customizedProduct.getId(), sizeId, primaryImage);
+
+            // Проверяем успешность добавления
+            if (!added) {
+                redirectAttributes.addFlashAttribute("error", "Не удалось добавить товар в корзину!");
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Кастомизированный товар добавлен в корзину!");
+            }
+            return "redirect:/api/v1/basket";
+        }
     }
 }

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Каталог</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .catalog-container {
+            display: flex;
+        }
+
+        .filter-sidebar {
+            width: 250px;
+            padding: 20px;
+            border-right: 2px solid #ccc;
+        }
+
+        .product-grid {
+            flex-grow: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-buttons label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .category-buttons button,
+        .filter-sidebar button {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .category-buttons button:hover,
+        .filter-sidebar button:hover {
+            background-color: #000000;
+        }
+
+        /* Дополнительные отступы для кнопок */
+        .category-buttons button {
+            margin-top: 10px;
+        }
+
+        .filter-sidebar button {
+            margin-top: 20px;
+        }
+
+        /* Стиль для поиска */
+        .search-bar {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-bar input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .search-bar button {
+            padding: 10px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .search-bar button:hover {
+            background-color: #000000;
+        }
+
+        /* Стиль для сортировки */
+        .sorting-bar {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sorting-bar select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo-home">
+        <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/newCustomProduct}">CUSTOM</a></div>
+    </div>
+    <div class="nav">
+        <div class="BASKET">
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
+        </div>
+        <div class="MY ACCOUNT">
+            <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+            <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/logout}">EXIT</a>
+            <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+        </div>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <h1 style="text-align:center;">Каталог товаров</h1>
+
+        <!-- Поле поиска товаров -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Поиск по имени товара..." onkeyup="applyFilters()">
+            <button onclick="clearSearch()">Очистить поиск</button>
+        </div>
+
+        <!-- Блок сортировки товаров -->
+        <div class="sorting-bar">
+            <label for="sortBy">Сортировать по:</label>
+            <select id="sortBy" onchange="applySorting()">
+                <option value="name-asc">По алфавиту (А - Я)</option>
+                <option value="name-desc">По алфавиту (Я - А)</option>
+                <option value="price-asc">По цене (возрастание)</option>
+                <option value="price-desc">По цене (убывание)</option>
+            </select>
+        </div>
+
+        <div class="catalog-container">
+            <!-- Фильтры слева -->
+            <div class="filter-sidebar">
+                <h3>Фильтры</h3>
+                <form id="filtersForm" onsubmit="applyFilters(event)">
+                    <!-- Кнопка "Все товары" с отступами -->
+                    <div class="category-buttons">
+                        <h4>Категория</h4>
+                        <label><input type="checkbox" value="Худи" class="category-filter"> Худи</label>
+                        <label><input type="checkbox" value="Футболка" class="category-filter"> Футболки</label>
+                        <label><input type="checkbox" value="Джинсы" class="category-filter"> Джинсы</label>
+                        <label><input type="checkbox" value="Сумка" class="category-filter"> Сумки</label>
+                        <label><input type="checkbox" value="Штаны" class="category-filter"> Штаны</label>
+                        <label><input type="checkbox" value="Зип-худи" class="category-filter"> Зип-худи</label>
+                        <label><input type="checkbox" value="Лонгслив" class="category-filter"> Лонгсливы</label>
+                    </div>
+                    <div class="gender-buttons">
+                        <h4>Пол</h4>
+                        <label><input type="radio" name="gender" value="Мужской"> Мужской</label>
+                        <label><input type="radio" name="gender" value="Женский"> Женский</label>
+                    </div>
+                    <!-- Кнопка "Применить фильтр" с отступами -->
+                    <button type="submit">Применить фильтр</button>
+                    <button type="button" id="showAll" onclick="filterAll()">Все товары</button>
+                </form>
+            </div>
+
+            <!-- Каталог товаров -->
+            <section class="product-grid">
+                <div class="product-card" th:each="product : ${products}"
+                     th:data-name="${product.name.toLowerCase()}"
+                     th:data-category="${product.clothingType}"
+                     th:data-gender="${product.gender}"
+                     th:data-custom="${product.custom}">
+                    <a th:href="@{/api/v1/product/{id}(id=${product.id})}">
+                        <img th:src="@{${product.primaryImage.imageUrl}}" th:alt="${product.name}">
+                    </a>
+                    <div class="product-info">
+                        <h3>
+                            <a th:href="@{/api/v1/product/{id}(id=${product.id})}" th:text="${product.name}">Товар</a>
+                        </h3>
+                        <p th:text="${product.description}">Описание товара</p>
+                        <span class="price" th:text="${product.price} + ' ₽'">Цена</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function filterAll() {
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(product => {
+                product.style.display = 'block';  // Показываем все товары
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';  // Очищаем поле поиска
+            applyFilters();  // Применяем фильтры снова
+        }
+
+        function applyFilters(event) {
+            if (event) event.preventDefault();  // Отменяем действие формы, если оно было
+
+            // Получаем введенный текст в поле поиска
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+            // Получаем выбранные категории
+            const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
+                .map(checkbox => checkbox.value);
+
+            // Получаем выбранный гендер
+            const selectedGender = document.querySelector('input[name="gender"]:checked')?.value;
+
+            // Обновить товары с учетом выбранных фильтров
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(product => {
+                const productCategory = product.getAttribute('data-category');
+                const productGender = product.getAttribute('data-gender');
+                const productName = product.getAttribute('data-name');
+                const isCustom = product.getAttribute('data-custom') === 'true';
+
+                // Логируем информацию о каждом продукте
+                console.log('Название товара: ', productName);
+
+                // Товары с категорией "Унисекс" всегда показываются
+                const isUnisex = productCategory === 'Унисекс';
+
+                // Проверка соответствия фильтрам
+                const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(productCategory) || isUnisex;
+                const matchesGender = !selectedGender || productGender === selectedGender || productGender === 'Унисекс';
+                const matchesSearch = productName.includes(searchQuery);
+
+                console.log('Совпадает ли товар с поиском: ', matchesSearch);
+
+                // Показываем продукт, если он подходит по фильтрам
+                if (matchesCategory && matchesGender && matchesSearch && !isCustom) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+        function applySorting() {
+            const sortBy = document.getElementById('sortBy').value;
+            const products = Array.from(document.querySelectorAll('.product-card'));
+
+            // Функция для сортировки товаров по имени
+            const sortByName = (a, b) => {
+                const nameA = a.querySelector('h3').innerText.toLowerCase();
+                const nameB = b.querySelector('h3').innerText.toLowerCase();
+                if (sortBy === 'name-asc') {
+                    return nameA.localeCompare(nameB);
+                } else if (sortBy === 'name-desc') {
+                    return nameB.localeCompare(nameA);
+                }
+                return 0;
+            };
+
+            // Функция для сортировки товаров по цене
+            const sortByPrice = (a, b) => {
+                const priceA = parseFloat(a.querySelector('.price').innerText.replace(' ₽', ''));
+                const priceB = parseFloat(b.querySelector('.price').innerText.replace(' ₽', ''));
+                if (sortBy === 'price-asc') {
+                    return priceA - priceB;
+                } else if (sortBy === 'price-desc') {
+                    return priceB - priceA;
+                }
+                return 0;
+            };
+
+            // Применяем сортировку
+            if (sortBy.includes('name')) {
+                products.sort(sortByName);
+            } else if (sortBy.includes('price')) {
+                products.sort(sortByPrice);
+            }
+
+            // Перемещаем отсортированные товары в DOM
+            const productGrid = document.querySelector('.product-grid');
+            products.forEach(product => {
+                productGrid.appendChild(product);
+            });
+        }
+    </script>
+</main>
+<footer>
+    <nav class="nav_footer">
+        <ul>
+            <li><a th:href="@{/delivery}">Доставка</a></li>
+            <li><a th:href="@{/returns}">Возврат</a></li>
+            <li><a th:href="@{/exchange}">Обмен</a></li>
+            <li><a th:href="@{/contacts}">Контакты</a></li>
+            <li><a th:href="@{/offer}">Оферта</a></li>
+        </ul>
+    </nav>
+    <div class="footer-content">
+        <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -99,4 +99,9 @@ public class ProductServiceImpl implements ProductService {
         // Сохраняем размеры
         productSizeRepository.saveAll(product.getSizes());
     }
+
+    @Override
+    public List<Product> findAllActualProduct() {
+        return repository.findByActualTrue();
+    }
 }

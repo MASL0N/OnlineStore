@@ -40,7 +40,7 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable()) // Отключение CSRF (если не API)
                 .authorizeRequests(auth -> auth
-                        .requestMatchers("/api/v1/home", "/api/v1/product/**", "/img/**").permitAll()
+                        .requestMatchers("/api/v1/home", "/api/v1/product/**", "/img/**", "/api/v1/catalog", "api/v1/newCustomProduct/**", "/api/v1/registration/**").permitAll()
                         .requestMatchers("/styles.css", "/js/**", "/img/**", "/static/**").permitAll()
                         .requestMatchers("api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("api/v1/home/**").hasRole("USER")

@@ -38,4 +38,17 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public boolean existsByName(String name) { return repository.existsByName(name); }
 
+    @Override
+    public List<Material> getMaterialsForCustomization() {return repository.findByClothingTypeIn(List.of("t-shirt", "hoodie"));}
+
+    @Override
+    public List<Material> getMaterialsByType(String clothingType) {return repository.findByClothingType(clothingType);}
+
+    @Override
+    public Material findByName(String name) { return repository.findByName(name); }
+
+    @Override
+    public Material findByNameAndClothingType(String name, String clothingType) {
+        return repository.findByNameAndClothingType(name, clothingType)
+            .orElseThrow(() -> new RuntimeException("Материал не найден: " + name + ", " + clothingType)); }
 }

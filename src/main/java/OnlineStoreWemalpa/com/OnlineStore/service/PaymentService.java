@@ -1,6 +1,7 @@
 package OnlineStoreWemalpa.com.OnlineStore.service;
 
 import OnlineStoreWemalpa.com.OnlineStore.model.Payment;
+import OnlineStoreWemalpa.com.OnlineStore.model.User;
 
 import java.util.List;
 

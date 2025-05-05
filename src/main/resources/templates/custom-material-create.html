@@ -84,8 +84,20 @@
         <label for="description">Описание:</label>
         <input type="text" id="description" th:field="*{description}" required>
 
+        <!-- Добавляем поле для выбора типа одежды -->
+        <label for="clothingType">Тип одежды:</label>
+        <select id="clothingType" th:field="*{clothingType}" required>
+            <option value="hoodie" th:selected="${material.clothingType == 'hoodie'}">Худи</option>
+            <option value="t-shirt" th:selected="${material.clothingType == 't-shirt'}">Футболка</option>
+            <option value="jeans" th:selected="${material.clothingType == 'jeans'}">Джинсы</option>
+            <option value="bag" th:selected="${material.clothingType == 'bag'}">Сумка</option>
+            <option value="pants" th:selected="${material.clothingType == 'pants'}">Штаны</option>
+            <option value="zip" th:selected="${material.clothingType == 'zip'}">Зип худи</option>
+            <option value="long" th:selected="${material.clothingType == 'long'}">Лонгслив</option>
+        </select>
+
         <div class="button-container">
-            <button type="submit">Создать новый материал</button>
+            <button type="submit" class="btn btn-save">Создать новый материал</button>
             <a th:href="@{/api/v1/admin/custom-admin}" class="btn btn-cancel">Отмена</a>
         </div>
 

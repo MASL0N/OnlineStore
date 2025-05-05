@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,22 @@ public class Order {
 
     @Column(name = "order_price", nullable = false)
     private BigDecimal orderPrice;
+
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
+    // Этот метод будет вызываться перед сохранением объекта в базу данных
+    @PreUpdate
+    @PrePersist
+    public void setCompletedAtIfCompleted() {
+        if ("Completed".equals(this.status) && this.completedAt == null) {
+            this.completedAt = LocalDateTime.now(); // Заполняем дату завершения
+        }
+    }
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();

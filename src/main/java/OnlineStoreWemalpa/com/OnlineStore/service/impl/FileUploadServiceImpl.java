@@ -11,7 +11,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/img/";
+    private static final String UPLOAD_DIR = "src/main/resources/static/img/uploaded_files/";
 
     @Override
     public String uploadFile(MultipartFile file) {
@@ -28,7 +28,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             // Возвращаем относительный путь к файлу (для хранения в БД)
-            return "/img/" + fileName;
+            return "/img/uploaded_files/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Ошибка при загрузке файла: " + e.getMessage());
         }

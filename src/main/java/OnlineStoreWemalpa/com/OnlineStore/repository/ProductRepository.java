@@ -13,4 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByIdWithSizes(@Param("id") Long id);
     void deleteById(Long id);
     List<Product> findByCustomFalse();
+    List<Product> findByActualTrue();
 }

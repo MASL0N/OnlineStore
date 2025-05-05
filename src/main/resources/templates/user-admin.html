@@ -6,13 +6,88 @@
   <title>Wemalpa</title>
   <!-- Подключение CSS через Thymeleaf -->
   <link rel="stylesheet" th:href="@{/styles.css}">
+  <script>
+    function searchProducts() {
+      let input = document.getElementById("searchInput").value.toLowerCase();
+      let tables = document.querySelectorAll("table tbody");
+
+      tables.forEach(table => {
+        let rows = table.getElementsByTagName("tr");
+        for (let row of rows) {
+          let nameCell = row.getElementsByTagName("td")[2]; // Колонка с названием
+          if (nameCell) {
+            let nameText = nameCell.textContent.toLowerCase();
+            row.style.display = nameText.includes(input) ? "" : "none";
+          }
+        }
+      });
+    }
+
+    function clearSearch() {
+      document.getElementById("searchInput").value = "";
+      searchProducts();
+    }
+
+    function sortTable(tableId, columnIndex, isNumeric = false) {
+      const table = document.getElementById(tableId);
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const headers = table.querySelectorAll("th");
+
+      let ascending = table.dataset.sortOrder !== "asc";
+      table.dataset.sortOrder = ascending ? "asc" : "desc";
+
+      headers.forEach((th, idx) => {
+        th.classList.remove("sorted-asc", "sorted-desc");
+        if (idx === columnIndex) {
+          th.classList.add(ascending ? "sorted-asc" : "sorted-desc");
+        }
+      });
+
+      rows.sort((a, b) => {
+        let valA = a.cells[columnIndex]?.textContent.trim() || "";
+        let valB = b.cells[columnIndex]?.textContent.trim() || "";
+
+        if (isNumeric) {
+          valA = parseFloat(valA.replace(",", ".")) || 0;
+          valB = parseFloat(valB.replace(",", ".")) || 0;
+          return ascending ? valA - valB : valB - valA;
+        }
+
+        return ascending
+                ? valA.localeCompare(valB, 'ru', { numeric: true })
+                : valB.localeCompare(valA, 'ru', { numeric: true });
+      });
+
+      rows.forEach(row => tbody.appendChild(row));
+    }
+  </script>
+  <style>
+    #searchInput {
+      width: 300px;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    th {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th.sorted-asc::after {
+      content: " ▲";
+    }
+
+    th.sorted-desc::after {
+      content: " ▼";
+    }
+  </style>
 </head>
 <body>
 <header>
   <div class="logo-home">
     <div class="logo">
-      <!-- Подключение логотипа через Thymeleaf -->
-      <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+      <div class="LOGO"><a th:href="@{/api/v1/admin/product-admin}">WEMALPA</a></div>
     </div>
   </div>
 
@@ -35,24 +110,28 @@
   </div>
 </header>
 <hr class="divider">
-<h2 class="title">welcome to the wemalpa collection</h2>
 
 <main>
+  <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Поиск по названию...">
+  <button onclick="clearSearch()">Очистить</button>
+
+  <h2>Актуальные пользователи</h2>
   <div class="button-container">
     <a href="/api/v1/admin/user-create" class="btn-create-user">Создать нового пользователя</a>
   </div>
-  <table border="1">
+
+  <table id="userTable" border="1" data-sort-order="asc">
     <thead>
     <tr>
-      <th>ID</th>
-      <th>Email</th>
-      <th>FirstName</th>
-      <th>LastName</th>
-      <th>City</th>
-      <th>Address</th>
-      <th>Phone Number</th>
-      <th>Post Index</th>
-      <th>Role</th>
+      <th onclick="sortTable('userTable', 0, true)">ID</th>
+      <th onclick="sortTable('userTable', 1)">Email</th>
+      <th onclick="sortTable('userTable', 2)">FirstName</th>
+      <th onclick="sortTable('userTable', 3)">LastName</th>
+      <th onclick="sortTable('userTable', 4)">City</th>
+      <th onclick="sortTable('userTable', 5)">Address</th>
+      <th onclick="sortTable('userTable', 6)">Phone Number</th>
+      <th onclick="sortTable('userTable', 7)">Post Index</th>
+      <th onclick="sortTable('userTable', 8)">Role</th>
     </tr>
     </thead>
     <tbody>

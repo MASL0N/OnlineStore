@@ -9,20 +9,17 @@
 <body>
 <header>
     <div class="logo-home">
-        <div class="logo">
-            <!-- Подключение логотипа через Thymeleaf -->
-            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
-        </div>
-        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+        <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
     </div>
-
     <div class="nav">
         <div class="BASKET">
-            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
         </div>
         <div class="MY ACCOUNT">
-            <a th:href="@{/login}">MY ACCOUNT</a>
-            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+            <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+            <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
         </div>
         <div class="EXIT">
             <a th:href="@{/logout}">EXIT</a>
@@ -39,7 +36,7 @@
              th:alt="${product.name}">
 
         <!-- Правая часть с характеристиками товара и кнопками -->
-        <form action="/api/v1/customization/customize" method="post">
+        <form action="/api/v1/customization/customize" method="post" enctype="multipart/form-data">
             <input type="hidden" th:value="${product.primaryImage.imageUrl}" name="primaryImage" />
             <input type="hidden" name="productId" th:value="${productId}">
 
@@ -82,6 +79,9 @@
             <select name="sizeId" id="size">
                 <option th:each="size : ${sizes}" th:value="${size.id}" th:text="${size.size}"></option>
             </select><br>
+
+            <label for="image">Добавить свой принт:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
 
             <button type="submit">Добавить кастомизированный продукт в корзину</button>
         </form>

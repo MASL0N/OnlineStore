@@ -19,7 +19,7 @@ public class HomeController {
     // Метод для отображения страницы с продуктами
     @GetMapping
     public String showProducts(Model model) {
-        List<Product> products = service.findAllCustomProduct(); // Получаем список продуктов
+        List<Product> products = service.findAllActualProduct(); // Получаем список продуктов
         model.addAttribute("products", products); // Передаем данные в модель
         return "home"; // Возвращаем имя шаблона
     }

@@ -76,27 +76,35 @@
 <body>
 <div class="container">
     <h2>Создание нового товара</h2>
-    <form th:action="@{/api/v1/admin/product-create}" th:object="${product}" method="post" enctype="multipart/form-data">
-
+    <form th:action="@{/api/v1/admin/product-create}" method="post" enctype="multipart/form-data">
         <label for="name">Название:</label>
-        <input type="text" id="name" th:field="*{name}" required>
+        <input name="name" type="text" id="name" required>
 
         <label for="description">Описание:</label>
-        <input type="text" id="description" th:field="*{decsription}" required>
+        <input name="description" type="text" id="description" required>
 
         <label for="price">Цена:</label>
-        <input type="number" id="price" th:field="*{price}" step="0.01" required>
+        <input name="price" type="number" id="price" step="0.01" required>
 
         <label for="gender">Пол:</label>
-        <select id="gender" th:field="*{gender}">
+        <select id="gender" name="gender">
             <option value="Мужской">Мужской</option>
             <option value="Женский">Женский</option>
             <option value="Унисекс">Унисекс</option>
         </select>
 
         <label for="clothingType">Тип одежды:</label>
-        <input type="text" id="clothingType" th:field="*{clothingType}" required>
+        <select id="clothingType" name="clothingType" required>
+            <option value="hoodie">Худи</option>
+            <option value="t-shirt">Футболка</option>
+            <option value="jeans">Джинсы</option>
+            <option value="bag">Сумка</option>
+            <option value="pants">Штаны</option>
+            <option value="zip">Зип худи</option>
+            <option value="long">Лонгслив</option>
+        </select>
 
+        <div>
         <label>Размеры в наличии:</label>
         <div>
             <input type="checkbox" id="sizeXS" name="sizes" value="XS">
@@ -117,12 +125,13 @@
             <input type="checkbox" id="sizeXXL" name="sizes" value="XXL">
             <label for="sizeXXL">XXL</label>
         </div>
+        </div>>
 
         <label for="images">Фото товара (первое изображение будет приоритетным):</label>
         <input type="file" id="images" name="images" accept="image/*" multiple required>
 
         <div class="button-container">
-            <button type="submit" class="btn btn-save">Сохранить изменения</button>
+            <button type="submit" class="btn btn-save">Сохранить</button>
             <a th:href="@{/api/v1/admin/product-admin}" class="btn btn-cancel">Отмена</a>
         </div>
     </form>

@@ -58,7 +58,7 @@ public class BasketServiceImpl implements BasketService {
     }
     // Оформить заказ из корзин
     @Override
-    public void checkout(User user) {
+    public Long checkout(User user) {
         Basket basket = getBasketByUser(user);
 
         if (basket == null || basket.getBasketItems().isEmpty()) {
@@ -82,6 +82,8 @@ public class BasketServiceImpl implements BasketService {
 
         orderService.saveOrder(order);  // Сохранить заказ в базе
         repository.delete(basket);  // Очистить корзину после оформления заказа
+
+        return order.getOrderId();
     }
 
     @Transactional

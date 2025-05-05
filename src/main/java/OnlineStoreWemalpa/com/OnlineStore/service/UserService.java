@@ -14,4 +14,5 @@ public interface UserService {
     void deleteUserById(Long id);
     void createUser(User user);
     boolean existsByEmail(String email);
+    User findUserWithOrders(Long id);
 }

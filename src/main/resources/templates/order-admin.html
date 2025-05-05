@@ -4,53 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wemalpa</title>
-    <!-- Подключение CSS через Thymeleaf -->
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        #searchInput {
+            width: 300px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        th {
+            cursor: pointer;
+            user-select: none;
+        }
+        th.sorted-asc::after {
+            content: " ▲";
+        }
+        th.sorted-desc::after {
+            content: " ▼";
+        }
+    </style>
 </head>
 <body>
 <header>
     <div class="logo-home">
         <div class="logo">
-            <!-- Подключение логотипа через Thymeleaf -->
-            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+            <div class="LOGO"><a th:href="@{/api/v1/admin/product-admin}">WEMALPA</a></div>
         </div>
     </div>
-
     <div class="nav">
-        <div class="PRODUCT">
-            <a th:href="@{/api/v1/admin/product-admin}">PRODUCT</a>
-        </div>
-        <div class="USERS">
-            <a th:href="@{/api/v1/admin/user-admin}">USERS</a>
-        </div>
-        <div class="ORDERS">
-            <a th:href="@{/api/v1/admin/order-admin}">ORDERS</a>
-        </div>
-        <div class="CUSTOMS">
-            <a th:href="@{/api/v1/admin/custom-admin}">CUSTOMS</a>
-        </div>
-        <div class="EXIT">
-            <a th:href="@{/logout}">EXIT</a>
-        </div>
+        <div class="PRODUCT"><a th:href="@{/api/v1/admin/product-admin}">PRODUCT</a></div>
+        <div class="USERS"><a th:href="@{/api/v1/admin/user-admin}">USERS</a></div>
+        <div class="ORDERS"><a th:href="@{/api/v1/admin/order-admin}">ORDERS</a></div>
+        <div class="CUSTOMS"><a th:href="@{/api/v1/admin/custom-admin}">CUSTOMS</a></div>
+        <div class="EXIT"><a th:href="@{/logout}">EXIT</a></div>
     </div>
 </header>
+
 <hr class="divider">
-<h2 class="title">welcome to the wemalpa collection</h2>
 
 <main>
+    <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Поиск по статусу...">
+    <button onclick="clearSearch()">Очистить</button>
+
+    <h2>Актуальные заказы</h2>
     <table border="1">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>UserID</th>
-            <th>Status</th>
-            <th>Price</th>
+            <th onclick="sortTable(0)">ID</th>
+            <th onclick="sortTable(1)">UserID</th>
+            <th onclick="sortTable(2)">Status</th>
+            <th onclick="sortTable(3)">Price</th>
             <th>Order items</th>
+            <th onclick="sortTable(5)">Created At</th>
+            <th onclick="sortTable(6)">Completed At</th>
+            <th>Actions</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <th:block th:each="order : ${orders}">
-            <tr>
+            <tr th:classappend="${#temporals.format(order.createdAt, 'yyyy-MM-dd') == #temporals.format(T(java.time.LocalDateTime).now(), 'yyyy-MM-dd')} ? 'highlight-today'">
                 <td th:text="${order.orderId}"></td>
                 <td th:text="${order.user.userId}"></td>
                 <td th:text="${order.status}"></td>
@@ -58,14 +70,15 @@
                 <td>
                     <ul>
                         <li th:each="item : ${order.orderItems}">
-                            <span th:text="${item.product.name}"></span> <!-- 🔥 Показываем название товара -->
-                            (x<span th:text="${item.quantity}"></span>) <!-- Количество -->
+                            <span th:text="${item.product.name}"></span>
+                            (x<span th:text="${item.quantity}"></span>)
                         </li>
                     </ul>
                 </td>
+                <td th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+                <td th:text="${order.status == 'Completed' ? #temporals.format(order.completedAt, 'dd.MM.yyyy HH:mm') : '—'}"></td>
                 <td><a th:href="@{/api/v1/admin/order-edit/{id}(id=${order.orderId})}" class="button-link edit">Edit</a></td>
                 <td><a th:href="@{/api/v1/admin/order-delete/{id}(id=${order.orderId})}" class="button-link delete" onclick="return confirm('Вы точно хотите удалить заказ?')">Delete</a></td>
-
             </tr>
         </th:block>
         </tbody>
@@ -86,5 +99,68 @@
         <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
     </div>
 </footer>
+
+<script>
+    function searchProducts() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll("table tbody tr");
+        rows.forEach(row => {
+            let statusCell = row.cells[2];
+            if (statusCell) {
+                let status = statusCell.textContent.toLowerCase();
+                row.style.display = status.includes(input) ? "" : "none";
+            }
+        });
+    }
+
+    function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        searchProducts();
+    }
+
+    let sortDirection = true;
+    function sortTable(columnIndex) {
+        const table = document.querySelector("table");
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.rows);
+        const headers = table.querySelectorAll("th");
+
+        headers.forEach((th, i) => {
+            th.classList.remove("sorted-asc", "sorted-desc");
+            if (i === columnIndex) {
+                th.classList.add(sortDirection ? "sorted-asc" : "sorted-desc");
+            }
+        });
+
+        rows.sort((a, b) => {
+            const aText = a.cells[columnIndex].textContent.trim();
+            const bText = b.cells[columnIndex].textContent.trim();
+
+            const aDate = Date.parse(aText);
+            const bDate = Date.parse(bText);
+            const isDate = !isNaN(aDate) && !isNaN(bDate);
+
+            const isNumber = !isNaN(parseFloat(aText)) && !isNaN(parseFloat(bText));
+
+            if (isNumber) {
+                return sortDirection ? aText - bText : bText - aText;
+            } else if (isDate) {
+                return sortDirection ? aDate - bDate : bDate - aDate;
+            } else {
+                return sortDirection ? aText.localeCompare(bText) : bText.localeCompare(aText);
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+        sortDirection = !sortDirection;
+    }
+</script>
+
+<style>
+    .highlight-today {
+        background-color: #ffdddd;
+    }
+</style>
+
 </body>
 </html>

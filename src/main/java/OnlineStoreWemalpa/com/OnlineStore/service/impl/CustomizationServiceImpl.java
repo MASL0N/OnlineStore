@@ -47,7 +47,7 @@ public class CustomizationServiceImpl implements CastomizationService {
         // Создаём новый объект `Product`, копируя данные
         Product newProduct = new Product();
         newProduct.setName(originalProduct.getName() + " (Custom)");
-        newProduct.setDecsription(originalProduct.getDecsription());
+        newProduct.setDescription(originalProduct.getDescription());
         newProduct.setPrice(originalProduct.getPrice()); // Можно обновлять цену, если кастомизация меняет стоимость
         newProduct.setGender(originalProduct.getGender());
         newProduct.setClothingType(originalProduct.getClothingType());

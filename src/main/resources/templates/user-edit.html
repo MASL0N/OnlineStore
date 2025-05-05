@@ -75,7 +75,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>Редактирование продукта</h2>
+    <h2>Редактирование пользователя</h2>
     <form th:action="@{/api/v1/admin/user-edit/{id}(id=${user.userId})}" th:object="${user}" method="post">
 
         <label for="userId">Id</label>

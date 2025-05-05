@@ -20,5 +20,6 @@ public class PrintType {
     private String description;
 
     @Column(name = "image_url")
-    private String imageUrl; // Ссылка на изображение
+    private String imageUrl;
+
 }

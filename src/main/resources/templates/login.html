@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        /* Общие стили для всей страницы */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -19,7 +18,6 @@
             color: #333;
         }
 
-        /* Контейнер для формы логина */
         .login-container {
             background-color: #ffffff;
             padding: 30px;
@@ -30,13 +28,11 @@
             text-align: center;
         }
 
-        /* Стили для формы */
         form {
             display: flex;
             flex-direction: column;
         }
 
-        /* Стили для каждого поля ввода */
         input[type="text"],
         input[type="password"] {
             padding: 10px;
@@ -47,16 +43,14 @@
             width: 100%;
         }
 
-        /* Фокус на полях ввода */
         input[type="text"]:focus,
         input[type="password"]:focus {
-            border-color: #4CAF50;
+            border-color: #000000;
             outline: none;
         }
 
-        /* Стили для кнопки входа */
         button[type="submit"] {
-            background-color: #4CAF50; /* Зеленый цвет для кнопки */
+            background-color: rgba(0, 0, 0, 0.95);
             color: #fff;
             border: none;
             padding: 12px;
@@ -64,13 +58,32 @@
             border-radius: 5px;
             cursor: pointer;
             margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
         }
 
         button[type="submit"]:hover {
-            background-color: #45a049; /* Немного темнее при наведении */
+            background-color: rgba(0, 0, 0, 0.76);
         }
 
-        /* Стили для ошибки */
+        .register-btn, .home-btn {
+            background-color: rgba(0, 0, 0, 0.95);;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .register-btn:hover, .home-btn:hover {
+            background-color: rgba(0, 0, 0, 0.76);
+        }
+
         .error-message {
             color: red;
             margin: 10px 0;
@@ -80,19 +93,24 @@
 </head>
 <body>
 
-<form action="/login" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
+<div class="login-container">
+    <form action="/login" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
 
-    <button type="submit">Login</button>
+        <button type="submit">Login</button>
 
-    <div th:if="${param.error}">
-        <p style="color:red;">Неверный логин или пароль.</p>
-    </div>
-</form>
+        <div th:if="${param.error}">
+            <p class="error-message">Неверный логин или пароль.</p>
+        </div>
+    </form>
+
+    <a href="/api/v1/registration" class="register-btn">Регистрация</a>
+    <a href="/api/v1/home" class="home-btn">На главную</a>
+</div>
 
 </body>
 </html>

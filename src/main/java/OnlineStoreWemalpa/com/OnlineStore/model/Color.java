@@ -16,7 +16,10 @@ public class Color {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "hex_code", nullable = false)
+    @Column(name = "hex_code")
     private String hexCode;
+
+    @Column(name = "clothing_type")
+    private String clothingType;
 }
 

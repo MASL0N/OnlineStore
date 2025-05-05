@@ -69,15 +69,15 @@ public class BasketController {
             return "redirect:/login";
         }
         User user = ((MyUserDetails) userDetails).getUser();
-        basketService.checkout(user);
-        return "redirect:/api/v1/order/thank";
+        Long orderId = basketService.checkout(user);
+        return "redirect:/api/v1/payment?orderId=" + orderId;
     }
 
     @PostMapping("/add")
     public String addToCart(@AuthenticationPrincipal UserDetails userDetails,
                             @RequestParam("productId") Long productId,
                             @RequestParam("sizeId") Long sizeId,
-                            @RequestParam String primaryImage,
+                            @RequestParam(value = "primaryImage", required = false) String primaryImage,
                             @RequestParam(value = "redirect", required = false) String redirectUrl,
                             RedirectAttributes redirectAttributes) {
         if (userDetails == null) {

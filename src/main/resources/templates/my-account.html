@@ -5,23 +5,35 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
+<style>
+    .edit-profile-btn {
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+    .edit-profile-btn:hover {
+    background-color: #000000;
+}
+</style>
 <body>
 <header>
     <div class="logo-home">
-        <div class="logo">
-            <!-- Подключение логотипа через Thymeleaf -->
-            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
-        </div>
-        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+        <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/newCustomProduct}">CUSTOM</a></div>
     </div>
-
     <div class="nav">
         <div class="BASKET">
-            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
         </div>
         <div class="MY ACCOUNT">
-            <a th:href="@{/login}">MY ACCOUNT</a>
-            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+            <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+            <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
         </div>
         <div class="EXIT">
             <a th:href="@{/logout}">EXIT</a>
@@ -30,7 +42,10 @@
     </div>
 </header>
 <div class="container">
-    <h1>Мой аккаунт</h1>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h1 style="margin: 0;">Мой аккаунт</h1>
+        <a th:href="@{/api/v1/account/edit}" class="edit-profile-btn">Редактировать профиль</a>
+    </div>
 
     <!-- Личная информация -->
     <h2>Личная информация</h2>
@@ -50,12 +65,14 @@
             <th>Номер заказа</th>
             <th>Статус</th>
             <th>Сумма</th>
+            <th>Дата создания</th>
             <th>Товары</th>
         </tr>
         <tr th:each="order : ${activeOrders}">
             <td th:text="${order.orderId}"></td>
             <td th:text="${order.status}"></td>
             <td th:text="${order.orderPrice} + ' ₽'"></td>
+            <td th:text="${order.createdAt}"></td>
             <td>
                 <ul>
                     <li th:each="orderItem : ${order.orderItems}">
@@ -78,12 +95,16 @@
             <th>Номер заказа</th>
             <th>Статус</th>
             <th>Сумма</th>
+            <th>Дата создания</th>
+            <th>Дата завершения</th>
             <th>Товары</th>
         </tr>
         <tr th:each="order : ${orderHistory}">
             <td th:text="${order.orderId}"></td>
             <td th:text="${order.status}"></td>
             <td th:text="${order.orderPrice} + ' ₽'"></td>
+            <td th:text="${order.createdAt}"></td> <!-- Отображаем дату создания -->
+            <td th:text="${order.status == 'Completed' ? order.completedAt : 'Не завершён'}"></td>
             <td>
                 <ul>
                     <li th:each="orderItem : ${order.orderItems}">

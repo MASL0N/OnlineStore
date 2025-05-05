@@ -9,29 +9,24 @@
 <body>
 <header>
     <div class="logo-home">
-        <div class="logo">
-            <!-- Подключение логотипа через Thymeleaf -->
-            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
-        </div>
-        <div class="HOME"><a th:href="@{/api/v1/home}">← На главную</a></div>
+        <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
     </div>
-
     <div class="nav">
         <div class="BASKET">
-            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
         </div>
         <div class="MY ACCOUNT">
-            <a th:href="@{/login}">MY ACCOUNT</a>
-            <a th:href="@{/login}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+            <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+            <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
         </div>
         <div class="EXIT">
-            <a th:href="@{/EXIT}">EXIT</a>
-            <a th:href="@{/EXIT}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+            <a th:href="@{/logout}">EXIT</a>
+            <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
         </div>
     </div>
 </header>
-
-
 <main class="product-details">
     <div class="product-container">
         <!-- Блок изображений -->
@@ -54,7 +49,7 @@
         <!-- Правая часть с характеристиками товара и кнопками -->
         <div class="product-info">
             <h1 th:text="${product.name}">Название товара</h1>
-            <p th:text="${product.decsription}">Описание товара</p>
+            <p th:text="${product.description}">Описание товара</p>
             <span class="price" th:text="${product.price} + ' ₽'">Цена</span>
 
             <h2>Характеристики</h2>

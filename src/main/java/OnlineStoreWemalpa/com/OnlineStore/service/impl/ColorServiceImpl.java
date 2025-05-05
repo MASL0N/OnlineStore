@@ -13,6 +13,10 @@ import java.util.List;
 @Primary
 public class ColorServiceImpl implements ColorService {
     private final ColorRepository repository;
+
+    @Override
+    public Color findById(Long id) { return repository.findById(id).orElse(null); }
+
     @Override
     public List<Color> findAllColor() {
         return repository.findAll();
@@ -29,8 +33,5 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
-    public void deleteColor(Long id) {
-        repository.deleteById(id);
-
-    }
+    public void deleteColor(Long id) { repository.deleteById(id); }
 }

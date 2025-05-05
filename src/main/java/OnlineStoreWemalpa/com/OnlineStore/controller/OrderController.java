@@ -8,7 +8,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/order")
 public class OrderController {
     @GetMapping("/thank")
-    public String thankYouPage() {
-        return "thank"; // Thymeleaf-шаблон "thank-you.html"
-    }
+    public String thankYouPage() {return "thank";}
 }

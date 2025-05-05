@@ -45,10 +45,13 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @JsonIgnore  // Исключаем из JSON, чтобы избежать циклической зависимости
-    @ToString.Exclude  // Lombok не будет включать это поле в toString()
+    @JsonIgnore
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
 
     @Override
     public String toString() {

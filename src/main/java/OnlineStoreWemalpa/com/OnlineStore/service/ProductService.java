@@ -15,5 +15,6 @@ public interface ProductService {
     boolean deleteProductAdmin(Long id);
     Product saveProductWithImages(Product product, List<String> imageUrls);
     void saveProductWithImagesAndSizes(Product product);
+    List<Product> findAllActualProduct();
 }
 

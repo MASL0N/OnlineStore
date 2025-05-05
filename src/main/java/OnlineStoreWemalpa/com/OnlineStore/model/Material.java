@@ -16,6 +16,9 @@ public class Material {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "clothing_type")
+    private String clothingType;
+
     @Column(name = "description")
     private String description;
 }

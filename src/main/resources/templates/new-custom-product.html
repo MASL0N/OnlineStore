@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали продукта</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <style>
+        .product-details {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .product-image {
+            max-width: 600px;
+            max-height: 600px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .color-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .color-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .color-circle.selected {
+            border: 3px solid #fff; /* Белая рамка вокруг выбранного цвета */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень для выделения */
+        }
+
+        .size-option.selected {
+            background-color: #f0f0f0; /* Светлый фон для выделенного размера */
+            border-radius: 5px; /* Скругление углов */
+            border: 2px solid #007bff; /* Синяя рамка */
+        }
+
+
+        /* Конструктор */
+        #constructorAreaFront {
+            position: relative;
+            display: inline-block;
+        }
+
+        #constructorAreaBack {
+            position: relative;
+            display: inline-block;
+        }
+
+        #printImageFront {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            width: 100px;
+            display: none;
+            cursor: move;
+            z-index: 2;
+        }
+
+        #printImageBack {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            width: 100px;
+            display: none;
+            cursor: move;
+            z-index: 2;
+        }
+
+
+        #printZoneFront {
+            position: absolute;
+            top: 160px;
+            left: 179px;
+            width: 235px;
+            height: 365px;
+            border: 2px dashed #999;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #printZoneBack {
+            position: absolute;
+            top: 130px;
+            left: 179px;
+            width: 235px;
+            height: 390px;
+            border: 2px dashed #999;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .remove-print-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 0, 0, 0.22);
+            color: white;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 3;
+        }
+        .remove-print-btn:hover {
+            background-color: rgba(255, 0, 0, 0.6); /* Более яркий красный при наведении */
+            transform: scale(1.1); /* Увеличиваем кнопку при наведении */
+        }
+        .category-picker {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .category-picker label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .category-picker input[type="radio"] {
+            margin-right: 5px;
+        }
+        .upload-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .upload-label {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            gap: 10px;
+        }
+
+        .upload-label:hover {
+            background-color: #e6e6e6;
+        }
+
+        .upload-button {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        button[type="submit"] {
+            background-color: rgba(0, 0, 0, 0.8);     /* Синий фон */
+            color: white;                  /* Белый текст */
+            border: none;                  /* Без границы */
+            padding: 12px 20px;            /* Отступы внутри кнопки */
+            font-size: 16px;               /* Размер шрифта */
+            border-radius: 6px;            /* Скругление углов */
+            cursor: pointer;               /* Курсор при наведении */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: rgba(0, 0, 0, 0.96);     /* Более тёмный синий при наведении */
+            transform: translateY(-1px);   /* Лёгкий эффект "подъёма" */
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);        /* Эффект нажатия */
+        }
+
+        .upload-text {
+            font-weight: 500;
+        }
+
+        #uploadPrintFront {
+            display: none;
+        }
+
+        #uploadPrintBack {
+            display: none;
+        }
+
+        #fileNameFront {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        #fileNameBack {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .size-selector {
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 10px;
+        }
+
+        .size-option {
+            display: inline-block;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+            transition: all 0.2s ease-in-out;
+            font-size: 14px;
+        }
+
+        .size-option input[type="radio"] {
+            display: none;
+        }
+
+        .size-option:hover {
+            border-color: #f07bc2;
+        }
+
+        .size-option input[type="radio"]:checked + label,
+        .size-option input[type="radio"]:checked {
+            background-color: #ffe6f0;
+            border: 2px solid #f07bc2;
+            color: #f07bc2;
+            font-weight: bold;
+        }
+
+        .size-info {
+            margin-top: 10px;
+            text-decoration: none;
+        }
+
+        .size-info a {
+            color: inherit;               /* Наследует цвет от родителя */
+            text-decoration: none;        /* Убирает подчёркивание */
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .size-info a:hover {
+            color: rgba(0, 0, 0, 0.84);       /* Новый цвет при наведении */
+            text-decoration: none; /* Убираем подчёркивание при наведении */
+        }
+
+        .size-info a:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #f07bc2;
+        }
+
+        .material-description {
+            width: 300px;  /* Фиксированная ширина */
+            text-overflow: ellipsis; /* Добавить многоточие, если текст слишком длинный */
+            word-wrap: break-word; /* Разрыв длинных слов */
+            margin-top: 10px;
+            white-space: normal;
+            overflow: visible;          /* Убираем обрезку текста */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-home">
+        <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
+        <div class="HOME"><a th:href="@{/api/v1/newCustomProduct}">CUSTOM</a></div>
+    </div>
+    <div class="nav">
+        <div class="BASKET">
+            <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
+        </div>
+        <div class="MY ACCOUNT">
+            <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
+            <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
+        </div>
+        <div class="EXIT">
+            <a th:href="@{/logout}">EXIT</a>
+            <a th:href="@{/logout}"><img th:src="@{/img/exit.png}" alt="exit"></a>
+        </div>
+    </div>
+</header>
+
+<main class="product-details">
+    <div class="product-container">
+        <form action="/api/v1/newCustomProduct" method="post" enctype="multipart/form-data">
+
+            <!-- Галерея изображений -->
+            <div class="image-gallery">
+                <h1>Создание своего товара</h1>
+
+                <!-- Передняя сторона -->
+                <div id="constructorAreaFront">
+                    <img id="mainImageFront" src="/img/t-shirt/black.png" alt="Передняя часть изображения" class="product-image">
+                    <div id="printZoneFront"></div>
+                    <img id="printImageFront" />
+                    <button id="removePrintButtonFront" class="remove-print-btn" style="display: none;">Удалить принт</button>
+                </div>
+                <div class="upload-wrapper">
+                    <label for="uploadPrintFront" class="upload-label">
+                        <span class="upload-text">Загрузите свой принт (Передняя часть)</span>
+                        <span class="upload-button">Выбрать файл</span>
+                    </label>
+                    <input type="file" id="uploadPrintFront" name="printFrontFile" accept="image/*">
+                    <span id="fileNameFront">Файл не выбран</span>
+                </div>
+
+                <!-- Задняя сторона -->
+                <div id="constructorAreaBack">
+                    <img id="mainImageBack" src="/img/t-shirt/black b.png" alt="Задняя часть изображения" class="product-image">
+                    <div id="printZoneBack"></div>
+                    <img id="printImageBack" />
+                    <button id="removePrintButtonBack" class="remove-print-btn" style="display: none;">Удалить принт</button>
+                </div>
+                <div class="upload-wrapper">
+                    <label for="uploadPrintBack" class="upload-label">
+                        <span class="upload-text">Загрузите свой принт (Задняя часть)</span>
+                        <span class="upload-button">Выбрать файл</span>
+                    </label>
+                    <input type="file" id="uploadPrintBack" name="printBackFile" accept="image/*">
+                    <span id="fileNameBack">Файл не выбран</span>
+                </div>
+            </div>
+
+            <!-- Скрытые поля -->
+            <input type="hidden" name="colorId" id="colorIdInput">
+            <input type="hidden" name="printX" id="printX">
+            <input type="hidden" name="printY" id="printY">
+            <input type="hidden" name="printScale" id="printScale">
+            <input type="hidden" id="printBackX" name="printBackX">
+            <input type="hidden" id="printBackY" name="printBackY">
+            <input type="hidden" id="printBackScale" name="printBackScale">
+
+            <!-- Категория -->
+            <div style="margin-bottom: 10px;">
+                <label>Категория:</label>
+                <div class="category-picker">
+                    <label><input type="radio" name="category" value="t-shirt" checked>Футболка</label>
+                    <label><input type="radio" name="category" value="hoodie">Худи</label>
+                    <label><input type="radio" name="category" value="zip">Зип худи</label>
+                    <label><input type="radio" name="category" value="long">Лонгслив</label>
+                    <label><input type="radio" name="category" value="pants">Штаны</label>
+                </div>
+            </div>
+
+            <!-- Цвета -->
+            <div>
+                <label>Цвет:</label>
+                <div class="color-picker">
+                    <div class="color-circle" data-color="red" data-id="1" style="background-color: red;"></div>
+                    <div class="color-circle" data-color="green" data-id="2" style="background-color: green;"></div>
+                    <div class="color-circle" data-color="blue" data-id="3" style="background-color: blue;"></div>
+                    <div class="color-circle" data-color="yellow" data-id="4" style="background-color: yellow;"></div>
+                    <div class="color-circle" data-color="black" data-id="5" style="background-color: black;"></div>
+                    <div class="color-circle" data-color="white" data-id="6" style="background-color: white; border: 1px solid #ccc;"></div>
+                    <div class="color-circle" data-color="pink" data-id="7" style="background-color: pink;"></div>
+                    <div class="color-circle" data-color="orange" data-id="8" style="background-color: orange;"></div>
+                    <div class="color-circle" data-color="violet" data-id="9" style="background-color: purple;"></div>
+                    <div class="color-circle" data-color="light blue" data-id="10" style="background-color: #01daff;"></div>
+                </div>
+            </div>
+
+            <!-- Размер -->
+            <div class="size-info">
+                <a href="#" id="sizeChartLink">Таблица размеров</a>
+            </div>
+
+            <div id="sizeChartModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <img id="sizeChartImage" src="" alt="Таблица размеров" />
+                </div>
+            </div>
+
+            <div class="size-selector">
+                <label>Размер:</label>
+                <div class="size-grid">
+                    <label class="size-option"><input type="radio" name="size" value="XS" >XS</label>
+                    <label class="size-option"><input type="radio" name="size" value="S" >S</label>
+                    <label class="size-option"><input type="radio" name="size" value="M" >M</label>
+                    <label class="size-option"><input type="radio" name="size" value="L" >L</label>
+                    <label class="size-option"><input type="radio" name="size" value="XL" >XL</label>
+                    <label class="size-option"><input type="radio" name="size" value="XXL" >XXL</label>
+                </div>
+            </div>
+
+            <!-- Материал -->
+            <div>
+                <label for="materialSelect">Материал:</label>
+                <select id="materialSelect" name="material">
+                    <option value="">Выберите материал</option>
+                    <option th:each="material : ${materials}"
+                            th:value="${material.name}"
+                            th:text="${material.name}"
+                            th:data-category="${material.clothingType}"
+                            th:data-description="${material.description}">
+                    </option>
+                </select>
+            </div>
+
+            <div id="materialDescription" class="material-description">
+                <p>Выберите материал, чтобы увидеть описание.</p>
+            </div>
+
+            <!-- Отправка -->
+            <button type="submit">Добавить в корзину</button>
+        </form>
+    </div>
+</main>
+
+
+<footer>
+    <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
+</footer>
+
+<!-- Скрипты -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // === Инициализация ===
+        const colorCircles = document.querySelectorAll(".color-circle");
+        const mainImage = document.getElementById("mainImage");
+        const colorIdInput = document.getElementById("colorIdInput");
+        const categoryRadios = document.querySelectorAll("input[name='category']");
+        const uploadInputFront = document.getElementById('uploadPrintFront');
+        const uploadInputBack = document.getElementById('uploadPrintBack');
+        const fileNameFront = document.getElementById('fileNameFront');
+        const fileNameBack = document.getElementById('fileNameBack');
+
+        function getSelectedCategory() {
+            const radio = document.querySelector("input[name='category']:checked");
+            return radio ? radio.value : "t-shirt";
+        }
+
+        function getSelectedColor() {
+            const circle = document.querySelector(".color-circle.selected");
+            return circle ? {
+                color: circle.getAttribute("data-color"),
+                id: circle.getAttribute("data-id")
+            } : null;
+        }
+
+        function updateThumbnails(category, color, isBack = false) {
+            const folderMap = {
+                "t-shirt": "t-shirt",
+                "hoodie": "hoodie",
+                "zip": "zip",
+                "long": "long",
+                "pants": "pants"
+            };
+
+            const folder = folderMap[category] || "t-shirt"; // fallback
+            const imageType = isBack ? `${color} b.png` : `${color}.png`;
+            const mainImage = isBack ? document.getElementById("mainImageBack") : document.getElementById("mainImageFront");
+            mainImage.src = `/img/${folder}/${imageType}`;
+        }
+
+        function refreshProductView() {
+            const category = getSelectedCategory();
+            const selected = getSelectedColor();
+            if (!selected) return;
+
+            // Обновляем и фронт, и бэк
+            updateThumbnails(category, selected.color, false); // передняя часть
+            updateThumbnails(category, selected.color, true);  // задняя часть
+            colorIdInput.value = selected.id;
+        }
+
+        colorCircles.forEach(circle => {
+            circle.addEventListener("click", () => {
+                colorCircles.forEach(c => c.classList.remove("selected"));
+                circle.classList.add("selected");
+                refreshProductView();
+            });
+        });
+
+        categoryRadios.forEach(radio => {
+            radio.addEventListener("change", refreshProductView);
+        });
+
+        uploadInputFront.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            fileNameFront.textContent = file ? file.name : 'Файл не выбран';
+        });
+
+        uploadInputBack.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            fileNameBack.textContent = file ? file.name : 'Файл не выбран';
+        });
+
+        document.querySelectorAll('.material-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.material-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                document.getElementById('materialInput').value = option.dataset.material;
+            });
+        });
+
+        document.querySelector(".color-circle[data-color='black']").click();
+
+        function createPrintEditor(config) {
+            const {
+                uploadInputId,
+                printImageId,
+                constructorAreaId,
+                printZoneId,
+                removeButtonId,
+                xInputId,
+                yInputId,
+                scaleInputId
+            } = config;
+
+            const xInput = document.getElementById(xInputId);
+            const yInput = document.getElementById(yInputId);
+            const scaleInput = document.getElementById(scaleInputId);
+            const uploadPrint = document.getElementById(uploadInputId);
+            const printImage = document.getElementById(printImageId);
+            const constructorArea = document.getElementById(constructorAreaId);
+            const printZone = document.getElementById(printZoneId);
+            const removePrintButton = document.getElementById(removeButtonId);
+
+            if (!uploadPrint || !printImage || !constructorArea || !printZone || !removePrintButton) {
+                console.warn("Элемент не найден:", config);
+                return;
+            }
+
+            let isDragging = false, offsetX = 0, offsetY = 0;
+
+            function init() {
+                uploadPrint.addEventListener('change', loadPrint);
+                printImage.addEventListener('mousedown', startDrag);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', () => isDragging = false);
+                printImage.addEventListener('wheel', scale);
+                removePrintButton.addEventListener('click', removePrint);
+            }
+
+            function loadPrint(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    printImage.src = e.target.result;
+                    printImage.style.cssText = 'display:block; left:100px; top:100px; transform:scale(1);';
+                    removePrintButton.style.display = 'block';
+
+                    if (xInput) xInput.value = 100;
+                    if (yInput) yInput.value = 100;
+                    if (scaleInput) scaleInput.value = 1;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function startDrag(e) {
+                isDragging = true;
+                offsetX = e.offsetX;
+                offsetY = e.offsetY;
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+
+                const constructorRect = constructorArea.getBoundingClientRect();
+                const zoneRect = printZone.getBoundingClientRect();
+
+                let x = e.clientX - constructorRect.left - offsetX;
+                let y = e.clientY - constructorRect.top - offsetY;
+
+                const minX = zoneRect.left - constructorRect.left;
+                const minY = zoneRect.top - constructorRect.top;
+                const maxX = minX + printZone.offsetWidth - printImage.offsetWidth;
+                const maxY = minY + printZone.offsetHeight - printImage.offsetHeight;
+
+                x = Math.max(minX, Math.min(x, maxX));
+                y = Math.max(minY, Math.min(y, maxY));
+
+                printImage.style.left = `${x}px`;
+                printImage.style.top = `${y}px`;
+
+                xInput.value = x;
+                yInput.value = y;
+            }
+
+            function scale(e) {
+                e.preventDefault();
+                let current = parseFloat(printImage.style.transform.replace('scale(', '').replace(')', '')) || 1;
+                let newScale = e.deltaY < 0 ? current * 1.1 : current / 1.1;
+                printImage.style.transform = `scale(${newScale})`;
+                scaleInput.value = newScale.toFixed(2);
+            }
+
+            function removePrint() {
+                printImage.style.display = 'none';
+                removePrintButton.style.display = 'none';
+                if (xInput) xInput.value = "";
+                if (yInput) yInput.value = "";
+                if (scaleInput) scaleInput.value = "";
+            }
+
+            return { init };
+        }
+
+        createPrintEditor({
+            uploadInputId: 'uploadPrintFront',
+            printImageId: 'printImageFront',
+            constructorAreaId: 'constructorAreaFront',
+            printZoneId: 'printZoneFront',
+            removeButtonId: 'removePrintButtonFront',
+            xInputId: 'printX',
+            yInputId: 'printY',
+            scaleInputId: 'printScale',
+        }).init();
+
+        createPrintEditor({
+            uploadInputId: 'uploadPrintBack',
+            printImageId: 'printImageBack',
+            constructorAreaId: 'constructorAreaBack',
+            printZoneId: 'printZoneBack',
+            removeButtonId: 'removePrintButtonBack',
+            xInputId: 'printBackX',
+            yInputId: 'printBackY',
+            scaleInputId: 'printBackScale'
+        }).init();
+
+        function filterMaterialsByCategory(category) {
+            const materialSelect = document.getElementById("materialSelect");
+            const options = materialSelect.querySelectorAll("option");
+
+            options.forEach(option => {
+                const optionCategory = option.getAttribute("data-category");
+
+                if (!optionCategory || optionCategory === category) {
+                    option.style.display = "block"; // показываем подходящий материал
+                } else {
+                    option.style.display = "none"; // скрываем неподходящие
+                }
+            });
+
+            // Сбрасываем выбранный материал при смене категории
+            materialSelect.value = "";
+            updateMaterialDescription();
+        }
+
+        function updateMaterialDescription() {
+            const materialSelect = document.getElementById("materialSelect");
+            const selectedOption = materialSelect.options[materialSelect.selectedIndex];
+            const descriptionContainer = document.getElementById("materialDescription");
+
+            if (selectedOption && selectedOption.getAttribute("data-description")) {
+                descriptionContainer.innerHTML = `<p>${selectedOption.getAttribute("data-description")}</p>`;
+            } else {
+                descriptionContainer.innerHTML = "<p>Выберите материал, чтобы увидеть описание.</p>";
+            }
+        }
+
+        categoryRadios.forEach(radio => {
+            radio.addEventListener("change", (e) => {
+                const selectedCategory = e.target.value;
+                filterMaterialsByCategory(selectedCategory);
+            });
+        });
+
+        document.getElementById("materialSelect").addEventListener("change", updateMaterialDescription);
+
+        filterMaterialsByCategory(getSelectedCategory());
+    });
+    const sizeChartLink = document.getElementById("sizeChartLink");
+    const sizeChartModal = document.getElementById("sizeChartModal");
+    const sizeChartImage = document.getElementById("sizeChartImage");
+    const closeBtn = document.querySelector(".modal .close");
+
+    sizeChartLink.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const selectedCategory = document.querySelector("input[name='category']:checked")?.value || "t-shirt";
+
+        // Пути к изображениям таблиц размеров для разных категорий
+        const sizeChartImages = {
+            "t-shirt": "/img/size/t-short.png",
+            "hoodie": "/img/size/hoodie.png",
+            "zip": "/img/size/zip.png",
+            "long": "/img/size/long.png",
+            "pants": "/img/size/pants.png"
+        };
+
+        sizeChartImage.src = sizeChartImages[selectedCategory] || sizeChartImages["t-shirt"];
+        sizeChartModal.style.display = "block";
+    });
+
+    closeBtn.addEventListener("click", () => {
+        sizeChartModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+        if (e.target === sizeChartModal) {
+            sizeChartModal.style.display = "none";
+        }
+    });
+
+    document.querySelectorAll('.color-circle').forEach(circle => {
+        circle.addEventListener('click', function() {
+            // Удаляем класс "selected" у всех цветов
+            document.querySelectorAll('.color-circle').forEach(item => item.classList.remove('selected'));
+
+            // Добавляем класс "selected" к выбранному цвету
+            this.classList.add('selected');
+
+            // Сохраняем выбранный цвет в скрытое поле (если нужно)
+            const colorIdInput = document.getElementById('colorIdInput');
+            colorIdInput.value = this.getAttribute('data-id');
+        });
+    });
+
+    document.querySelectorAll('.size-option input').forEach(input => {
+        input.addEventListener('change', function() {
+            // Удаляем класс "selected" у всех размеров
+            document.querySelectorAll('.size-option').forEach(label => label.classList.remove('selected'));
+
+            // Добавляем класс "selected" к выбранному размеру
+            this.closest('.size-option').classList.add('selected');
+        });
+    });
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const material = document.getElementById("materialSelect").value;
+        const sizeChecked = document.querySelector("input[name='size']:checked");
+
+        if (!material && !sizeChecked) {
+            alert("Пожалуйста, выберите материал и размер.");
+            e.preventDefault();
+            return;
+        }
+
+        if (!material) {
+            alert("Пожалуйста, выберите материал.");
+            e.preventDefault();
+            return;
+        }
+
+        if (!sizeChecked) {
+            alert("Пожалуйста, выберите размер.");
+            e.preventDefault();
+            return;
+        }
+    });
+
+</script>
+
+</body>
+</html>

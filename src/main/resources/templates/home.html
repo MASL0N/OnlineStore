@@ -4,26 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wemalpa</title>
-  <!-- Подключение CSS через Thymeleaf -->
+  <!-- Подключение CSS -->
   <link rel="stylesheet" th:href="@{/styles.css}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <style>
+    .swiper-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 400px;
+      margin: 0px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .swiper-button-prev, .swiper-button-next {
+      color: #fff;
+    }
+    .swiper-pagination {
+      bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 <header>
   <div class="logo-home">
-    <div class="logo">
-      <!-- Подключение логотипа через Thymeleaf -->
-      <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
-    </div>
+    <div class="LOGO"><a th:href="@{/api/v1/home}">WEMALPA</a></div>
     <div class="HOME"><a th:href="@{/api/v1/home}">HOME</a></div>
+    <div class="HOME"><a th:href="@{/api/v1/catalog}">CATALOG</a></div>
+    <div class="HOME"><a th:href="@{/api/v1/newCustomProduct}">CUSTOM</a></div>
   </div>
-
   <div class="nav">
     <div class="BASKET">
-      <a th:href="@{/api/v1/basket}"><img th:src="@{/img/icons8.png}" alt="basket"></a>
+      <a th:href="@{/api/v1/basket}"><img th:src="@{/img/korzina.png}" alt="basket"></a>
     </div>
     <div class="MY ACCOUNT">
       <a th:href="@{/api/v1/account}">MY ACCOUNT</a>
-      <a th:href="@{/api/v1/account}"><img th:src="@{/img/myAcount.png}" alt="my account"></a>
+      <a th:href="@{/api/v1/account}"><img th:src="@{/img/account.png}" alt="my account"></a>
     </div>
     <div class="EXIT">
       <a th:href="@{/logout}">EXIT</a>
@@ -31,28 +56,68 @@
     </div>
   </div>
 </header>
-<hr class="divider">
-<h2 class="title">welcome to the wemalpa collection</h2>
 
+<!-- Слайдер -->
+<div class="swiper-container">
+  <div class="swiper-wrapper">
+    <div class="swiper-slide"><img th:src="@{/img/slide1.png}" alt="Slide 1"></div>
+    <div class="swiper-slide"><img th:src="@{/img/slide2.png}" alt="Slide 2"></div>
+    <div class="swiper-slide"><img th:src="@{/img/slide3.png}" alt="Slide 3"></div>
+  </div>
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+  <div class="swiper-pagination"></div>
+</div>
 <main>
+  <h1 class="actual">Актуальные товары</h1>
   <section class="product-grid">
-    <!-- Пример динамического вывода товаров через Thymeleaf -->
     <div class="product-card" th:each="product : ${products}">
       <a th:href="@{/api/v1/product/{id}(id=${product.id})}">
-        <img th:src="@{${product.primaryImage.imageUrl}}"
-             th:alt="${product.name}">
+        <img th:src="@{${product.primaryImage.imageUrl}}" th:alt="${product.name}">
       </a>
       <div class="product-info">
         <h3>
           <a th:href="@{/api/v1/product/{id}(id=${product.id})}" th:text="${product.name}">Товар</a>
         </h3>
-        <p th:text="${product.decsription}">Описание товара</p>
+        <p th:text="${product.description}">Описание товара</p>
         <span class="price" th:text="${product.price} + ' ₽'">Цена</span>
       </div>
     </div>
   </section>
+  <div class="catalog">
+    <a th:href="@{/api/v1/catalog}">ПЕРЕЙТИ В КАТАЛОГ</a>
+  </div>
 </main>
-
+<div class="contact">
+  <h1>Контакты и Локации</h1>
+  <div class="contact-section">
+    <div class="contact-item">
+      <img th:src="@{/img/phone.png}" alt="phone" class="icon">
+      <h2>Contact</h2>
+      <p>+7 999 999-99-99</p>
+      <p>Служба заботы WEMALPA/<br>WEMALPA STORE</p>
+      <p>wemalpa.tteam2020@gmail.com</p>
+    </div>
+    <div class="contact-item">
+      <img th:src="@{/img/addres.png}" alt="address" class="icon">
+      <h2>Address/Direction</h2>
+      <p>WEMALPA STORE</p>
+      <p>Комсомольская 23/10с5, вход с главной</p>
+      <p>улицы рядом с баром</p>
+      <p>piri-piri, 4 этаж</p>
+      <p>сразу слева офис 5</p>
+      <p>Ждем Вас!</p>
+    </div>
+    <div class="contact-item">
+      <img th:src="@{/img/contact.png}" alt="contact" class="icon">
+      <h2>Режим работы</h2>
+      <p>Ежедневно:</p>
+      <p>Пн-Вт 13:00-20:00</p>
+      <p>Сб-Вс 13:00-20:00</p>
+      <p>Ждем Вас!</p>
+    </div>
+  </div>
+</div>
 <footer>
   <nav class="nav_footer">
     <ul>
@@ -67,5 +132,29 @@
     <p>&copy; 2025 Wemalpa Collection. Все права защищены.</p>
   </div>
 </footer>
+
+<!-- Подключение Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    new Swiper(".swiper-container", {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev"
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true
+      },
+      effect: "slide",
+      speed: 3000
+    });
+  });
+</script>
 </body>
 </html>

@@ -6,13 +6,84 @@
     <title>Wemalpa</title>
     <!-- Подключение CSS через Thymeleaf -->
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <script>
+        function searchProducts() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let tables = document.querySelectorAll("table tbody");
+
+            tables.forEach(table => {
+                let rows = table.getElementsByTagName("tr");
+                for (let row of rows) {
+                    let nameCell = row.getElementsByTagName("td")[1]; // Колонка с названием
+                    if (nameCell) {
+                        let nameText = nameCell.textContent.toLowerCase();
+                        row.style.display = nameText.includes(input) ? "" : "none";
+                    }
+                }
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            searchProducts();
+        }
+
+        function sortTable(tableId, columnIndex, isNumeric = false) {
+            const table = document.getElementById(tableId);
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            const headers = table.querySelectorAll("th");
+
+            let ascending = table.dataset.sortOrder !== "asc";
+            table.dataset.sortOrder = ascending ? "asc" : "desc";
+
+            headers.forEach((th, idx) => {
+                th.classList.remove("sorted-asc", "sorted-desc");
+                if (idx === columnIndex) {
+                    th.classList.add(ascending ? "sorted-asc" : "sorted-desc");
+                }
+            });
+
+            rows.sort((a, b) => {
+                let valA = a.cells[columnIndex]?.textContent.trim() || "";
+                let valB = b.cells[columnIndex]?.textContent.trim() || "";
+
+                if (isNumeric) {
+                    valA = parseFloat(valA.replace(",", ".")) || 0;
+                    valB = parseFloat(valB.replace(",", ".")) || 0;
+                    return ascending ? valA - valB : valB - valA;
+                }
+
+                return ascending
+                    ? valA.localeCompare(valB, 'ru', { numeric: true })
+                    : valB.localeCompare(valA, 'ru', { numeric: true });
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+    <style>
+        #searchInput {
+            width: 300px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        th {
+            cursor: pointer;
+        }
+        th.sorted-asc::after {
+            content: " ▲";
+        }
+        th.sorted-desc::after {
+            content: " ▼";
+        }
+    </style>
 </head>
 <body>
 <header>
     <div class="logo-home">
         <div class="logo">
-            <!-- Подключение логотипа через Thymeleaf -->
-            <img class="logo" th:src="@{/img/logo.png}" alt="Logo">
+            <div class="LOGO"><a th:href="@{/api/v1/admin/product-admin}">WEMALPA</a></div>
         </div>
     </div>
 
@@ -35,18 +106,22 @@
     </div>
 </header>
 <hr class="divider">
-<h2 class="title">welcome to the wemalpa collection</h2>
-
 <main>
+    <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Поиск по названию...">
+    <button onclick="clearSearch()">Очистить</button>
+
+    <h2>Каталог материалов</h2>
     <div class="button-container">
         <a href="/api/v1/admin/custom-material-create" class="btn-create-user">Добавить новый материал</a>
     </div>
-    <table border="1">
+    <table id="materialsTable" border="1" data-sort-order="asc">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
+            <th onclick="sortTable('materialsTable', 0, true)">ID</th>
+            <th onclick="sortTable('materialsTable', 1)">Name</th>
+            <th onclick="sortTable('materialsTable', 2)">Description</th>
+            <!-- Новый столбец для типа одежды -->
+            <th onclick="sortTable('materialsTable', 3)">Clothing Type</th>
         </tr>
         </thead>
         <tbody>
@@ -55,21 +130,24 @@
                 <td th:text="${material.materialId}"></td>
                 <td th:text="${material.name}"></td>
                 <td th:text="${material.description}"></td>
+                <td th:text="${material.clothingType}"></td>
                 <td><a th:href="@{/api/v1/admin/custom-material-edit/{id}(id=${material.materialId})}" class="button-link edit">Edit</a></td>
                 <td><a th:href="@{/api/v1/admin/custom-material-delete/{id}(id=${material.materialId})}" class="button-link delete" onclick="return confirm('Вы точно хотите удалить материал?')">Delete</a></td>
             </tr>
         </th:block>
         </tbody>
     </table>
+
+    <h2>Каталог принтов</h2>
     <div class="button-container">
         <a href="/api/v1/admin/custom-printType-create" class="btn-create-user">Добавить новый принт</a>
     </div>
-    <table border="1">
+    <table id="printTypesTable" border="1" data-sort-order="asc">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
+            <th onclick="sortTable('printTypesTable', 0, true)">ID</th>
+            <th onclick="sortTable('printTypesTable', 1)">Name</th>
+            <th onclick="sortTable('printTypesTable', 2)">Description</th>
             <th>Image</th>
         </tr>
         </thead>

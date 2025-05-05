@@ -11,8 +11,8 @@ public interface BasketService {
     Basket updateBasket(Basket basket);
     void deleteBasket(Long basket);
     Basket getBasketByUser(User user);
-    public void updateItemQuantity(Long basketItemId, Integer quantity);
-    public void checkout(User user);
+    void updateItemQuantity(Long basketItemId, Integer quantity);
+    Long checkout(User user);
     boolean addToBasket(User user, Long productId, Long sizeId, String primaryImage);
     void removeItem(Long basketItemId);
 }

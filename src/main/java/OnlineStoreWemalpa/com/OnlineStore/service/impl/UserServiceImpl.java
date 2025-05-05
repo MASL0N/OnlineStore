@@ -8,11 +8,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service
 @AllArgsConstructor
 @Primary
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -52,6 +54,12 @@ public class UserServiceImpl implements UserService {
     public boolean existsByEmail(String email) {
         return repository.existsByEmail(email);
     }
+
+    @Override
+    public User findUserWithOrders(Long id) {
+        return repository.findUserWithOrders(id);
+    }
+
 
     public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
